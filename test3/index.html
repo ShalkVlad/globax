@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Список всех сотрудников</title>
+</head>
+<body>
+
+<h1>Список всех сотрудников</h1>
+
+<form id="searchForm">
+    <input type="text" id="searchInput" name="search" placeholder="Поиск сотрудников">
+    <button type="submit">Поиск</button>
+</form>
+
+<ul id="employeeList"></ul>
+
+<script>
+// Функция для отправки запроса на сервер для получения данных о сотрудниках
+function loadEmployees() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                displayEmployees(xhr.responseText);
+            } else {
+                alert("Не удалось загрузить список сотрудников. Статус: " + xhr.status);
+            }
+        }
+    };
+    xhr.open("GET", "/employees", true);
+    xhr.send();
+}
+
+// Функция для парсинга и отображения списка сотрудников
+function displayEmployees(data) {
+    var employeeList = document.getElementById("employeeList");
+    employeeList.innerHTML = "";
+
+    var employees = JSON.parse(data);
+    employees.forEach(function(employee) {
+        var listItem = document.createElement("li");
+        listItem.textContent = employee.fullname;
+        employeeList.appendChild(listItem);
+    });
+}
+
+// При отправке формы загружаем данные о сотрудниках
+document.getElementById("searchForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    loadEmployees();
+});
+
+// Загрузка данных о сотрудниках при загрузке страницы
+document.addEventListener("DOMContentLoaded", function() {
+    loadEmployees();
+});
+</script>
+
+</body>
+</html>
